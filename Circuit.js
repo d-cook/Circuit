@@ -21,10 +21,25 @@ let gateSize = 30;
 let mouse = { x: 0, y: 0 };
 
 function Value(val) {
+    let state = (typeof val === 'function') ? val : () => !!val;
     return {
-        state    : (typeof value === 'function') ? val : () => !!val,
+        state    : state,
         propagate: () => { },
-        update   : () => { }
+        update   : () => { },
+        getSize: () => ({
+            w: gateSize/2 + stubLen + 1,
+            h: gateSize/2
+        }),
+        render: (x, y, not) => {
+            let stateColor = (!not === state()) ? 'red' : 'black';
+            let quarter    = Math.floor(gateSize/4);
+            return [
+                [stateColor + ' rect', x, y, gateSize/2, gateSize/2],
+                (not ? [stateColor + ' circle', x + gateSize/2 + stubLen/2, y + quarter, stubLen/2]
+                     : [stateColor + ' line', x + gateSize/2, y + quarter, x + gateSize/2 + stubLen, y + quarter]
+                 )
+            ];
+        }
     };
 }
 
@@ -186,7 +201,7 @@ function renderCursor(x, y) {
 
 function renderAll() {
     // Hard-coded entities based on mouse position, for now:
-    let gates = [And, Or, XOr, Not].map(g => g(new Array(numInputs).fill(0).map(s => Math.random() < 0.5)));
+    let gates = [And, Or, XOr, Not, Value].map(g => g(new Array(numInputs).fill(0).map(s => Math.random() < 0.5)));
     gates.forEach(g => { g.update(); g.propagate(); g.update(); });
     let content = [].concat(
         ...gates.map(g => g.getSize()).map((s, i) => [['filled #EEE rect', mouse.x + 55*i, mouse.y, s.w, s.h]]),

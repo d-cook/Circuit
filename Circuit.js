@@ -21,6 +21,7 @@ let gateSize = 30;
 let mouse = { x: 0, y: 0 };
 
 function Value(val) {
+    val = Array.isArray(val) ? val[0] : val;
     let state = (typeof val === 'function') ? val : () => !!val;
     return {
         state    : state,

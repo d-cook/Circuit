@@ -151,16 +151,17 @@ function XOr(inputs) {
     });
 }
 
-function Not(inputs) {
-    let gate = Gate(inputs.slice(0, 1), states => !states[0]);
+function Not(input) {
+    let inputs = Array.isArray(input) ? input.slice(0, 1) : [input];
+    let gate = Gate(inputs, states => !states[0]);
     return Object.assign(gate, {
         getSize: () => ({
             w: gateSize/2 + stubLen + 1,
             h: gateSize/2
         }),
         render: (x, y, not) => {
-            let stateColor  = gate.state() ? 'red' : 'black';
-            let quarter = Math.floor(gateSize/4);
+            let stateColor = gate.state() ? 'red' : 'black';
+            let quarter    = Math.floor(gateSize/4);
             let inputState = gate.inputStates()[0];
             return [
                 [stateColor + ' closed line',
